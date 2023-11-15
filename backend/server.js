@@ -5,8 +5,6 @@ const bodyParser = require('body-parser');
 
 const memos = [];
 
-app.use(bodyParser.json(), express.urlencoded({ extended: true }));
-
 app.get('/api/memos', (req, res) => {
   res.send(memos);
 });
