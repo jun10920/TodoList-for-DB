@@ -5,12 +5,13 @@ const bodyParser = require('body-parser');
 
 const memos = [];
 
+app.use(bodyParser.json());
+
 app.get('/api/memos', (req, res) => {
   res.send(memos);
 });
 
 app.post('/api/memos', (req, res) => {
-  // console.log(req.body);
   memos.push(req.body.content);
   res.send(memos);
 });
