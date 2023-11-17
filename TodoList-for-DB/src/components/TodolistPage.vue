@@ -16,8 +16,18 @@
       <div v-for="(d, idx) in state.todoData" :key="idx" class="task-list">
         <span class="check-box">&#10003;</span>
         <span>{{ d }}</span>
-        <span class="expand-button">...</span>
+        <span class="expand-button" @click="openModal()">...</span>
       </div>
+      <transition name="fade">
+        <div class="modal" v-if="this.$store.getters.getPopState === true">
+          <div class="modal-content">
+            <div>
+              <h1>This is Modal</h1>
+              <button @click="closeModal()">Close</button>
+            </div>
+          </div>
+        </div>
+      </transition>
     </div>
   </div>
 </template>
@@ -45,15 +55,27 @@ export default {
       signUpPage_state: false,
       todoListPage_state: true,
       personalInfo_state: false,
+      modalPage_state: false,
       addTodo,
     };
   },
-  methods: {},
+  methods: {
+    openModal() {
+      this.$store.commit('popStateChange', true);
+    },
+    closeModal() {
+      this.$store.commit('popStateChange', false);
+    },
+  },
   components: {},
 };
 </script>
 
 <style>
+#todoListPage {
+  position: relative;
+  z-index: 1;
+}
 .user-icon {
   font-size: 10px; /* 아이콘 크기를 조절 */
   color: #555;
@@ -128,5 +150,42 @@ export default {
   cursor: pointer;
   font-size: 20px;
   color: #555;
+}
+/* 모달창 관련  */
+
+/* 모달 창이 나타나는 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.modal {
+  animation-name: fadeIn;
+  animation-duration: 0.7s;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.modal .modal-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 모달 창에 애니메이션 적용 */
+.fade-leave-active {
+  transition: opacity 0.7s;
+}
+.fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>

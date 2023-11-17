@@ -36,7 +36,13 @@ body {
   text-align: center;
   background-color: #f4f4f4;
 }
+body {
+  width: 100%;
+  height: 100vh;
+}
 #totalBox {
+  z-index: 1;
+  position: relative;
   width: 500px;
   margin: 0 auto;
   padding: 20px;
