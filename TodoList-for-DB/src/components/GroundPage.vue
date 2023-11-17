@@ -29,3 +29,8 @@ export default {
   components: { startPage_login, signupPage, todoListPage, personalInfo },
 };
 </script>
+<style>
+.groundPage {
+  position: relative;
+}
+</style>
