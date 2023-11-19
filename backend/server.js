@@ -16,6 +16,11 @@ app.post('/api/memos', (req, res) => {
   res.send(memos);
 });
 
+app.put('/api/memos/:modalData', (req, res) => {
+  memos[req.params.modalData] = req.body.content;
+  res.send(memos);
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
