@@ -13,10 +13,10 @@
         <button class="remove-todo-button">-</button>
         <button class="add-todo-button" @click="addTodo()">+</button>
       </div>
-      <div v-for="(d, idx) in state.todoData" :key="idx" class="task-list">
+      <div v-for="d in state.todoData" :key="d.id" class="task-list">
         <span class="check-box">&#10003;</span>
-        <span>{{ d }}</span>
-        <span class="expand-button" @click="openModal(idx)">...</span>
+        <span>{{ d.content }}</span>
+        <span class="expand-button" @click="openModal(id)">...</span>
       </div>
       <transition name="fade">
         <div class="modal" v-if="this.$store.getters.getPopState === true">
@@ -48,12 +48,21 @@ export default {
     });
     const addTodo = () => {
       const content = prompt('내용을 입력해주세요.');
+
+      if (!content) {
+        alert('내용을 입력해주세요.');
+        return addTodo();
+      }
+
       axios.post('/api/memos', { content }).then((res) => {
         state.todoData = res.data;
       });
     };
     const edit = (modalData) => {
-      const content = prompt('내용을 입력해주세요', modalData);
+      const content = prompt(
+        '내용을 입력해주세요',
+        state.data.find?.((d) => d.id === modalData).content
+      );
       axios
         .put('/api/memos/' + modalData, { content })
         .then((res) => {
@@ -80,9 +89,9 @@ export default {
     };
   },
   methods: {
-    openModal(idx) {
+    openModal(id) {
       this.$store.commit('popStateChange', true);
-      this.$store.commit('setModalData', idx);
+      this.$store.commit('setModalData', id);
     },
     closeModal() {
       this.$store.commit('popStateChange', false);

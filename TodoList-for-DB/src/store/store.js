@@ -15,8 +15,8 @@ const store = createStore({
     popStateChange: function (state, value) {
       state.popState = value;
     },
-    setModalData(state, idx) {
-      state.modalData = idx;
+    setModalData(state, id) {
+      state.modalData = id;
     },
   },
 });
