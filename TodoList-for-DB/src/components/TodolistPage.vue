@@ -142,9 +142,9 @@ export default {
   font-size: 25px;
   color: black;
   cursor: pointer;
-  width: 5px;
+  width: auto;
   height: auto;
-  padding: 9px;
+  padding: 0 7px;
   margin-left: 7px;
   justify-content: center;
 }
