@@ -18,6 +18,7 @@
         <span>{{ d.content }}</span>
         <span class="expand-button" @click="openModal(id)">...</span>
       </div>
+      <!--모달-->
       <transition name="fade">
         <div class="modal" v-if="this.$store.getters.getPopState === true">
           <div class="modal-content">
@@ -151,9 +152,9 @@ export default {
   font-size: 25px;
   color: black;
   cursor: pointer;
-  width: 5px;
+  width: auto;
   height: auto;
-  padding: 9px;
+  padding: 7px;
   margin-left: 7px;
   justify-content: center;
 }
