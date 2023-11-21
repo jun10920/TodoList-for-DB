@@ -29,7 +29,12 @@
               >
                 수정
               </button>
-              <button class="deleteBtn">삭제</button>
+              <button
+                class="deleteBtn"
+                @click="deleteTodo(this.$store.state.modalData)"
+              >
+                삭제
+              </button>
             </div>
             <button class="closeBtn" @click="closeModal()">닫기</button>
           </div>
@@ -47,6 +52,11 @@ export default {
     const state = reactive({
       todoData: [],
     });
+    // 실행 시 db 데이터 들고오기
+    axios.get('/api/memos').then((res) => {
+      state.todoData = res.data;
+    });
+    // todo 추가
     const addTodo = () => {
       const content = prompt('내용을 입력해주세요.');
 
@@ -59,11 +69,16 @@ export default {
         state.todoData = res.data;
       });
     };
+    // todo 수정
     const edit = (modalData) => {
       const content = prompt(
         '내용을 입력해주세요',
         state.todoData.find((d) => d.id === modalData).content
       );
+      if (!content) {
+        alert('내용을 입력해주세요.');
+        return edit(modalData);
+      }
       axios
         .put('/api/memos/' + modalData, { content })
         .then((res) => {
@@ -75,9 +90,20 @@ export default {
           // 오류가 발생했을 때 필요한 작업을 수행합니다.
         });
     };
-    axios.get('/api/memos').then((res) => {
-      state.todoData = res.data;
-    });
+    // todo 삭제
+    const deleteTodo = (modalData) => {
+      axios
+        .get('/api/memos/delete/' + modalData)
+        .then((res) => {
+          state.todoData = res.data;
+          // 상태를 업데이트한 후에 필요한 작업을 수행합니다.
+        })
+        .catch((error) => {
+          console.error('There was an error!', error);
+          // 오류가 발생했을 때 필요한 작업을 수행합니다.
+        });
+    };
+
     return {
       state,
       startPage_state: true,
@@ -87,6 +113,7 @@ export default {
       modalPage_state: false,
       addTodo,
       edit,
+      deleteTodo,
     };
   },
   methods: {

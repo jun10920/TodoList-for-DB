@@ -16,6 +16,7 @@ app.use(cors());
 app.set('port', process.env.PORT || 3000); // 포트 설정
 app.set('host', process.env.HOST || '0.0.0.0'); // 아이피 설정
 
+// 실행 시 db 데이터 들고오기
 app.get('/api/memos', async (req, res) => {
   var sql = 'SELECT * FROM memos';
   try {
@@ -25,7 +26,7 @@ app.get('/api/memos', async (req, res) => {
     console.log('query is not executed: ' + err);
   }
 });
-
+// todo 추가
 app.post('/api/memos', async (req, res) => {
   var sql = `INSERT INTO memos (content) VALUES ('${req.body.content}')`;
   try {
@@ -36,7 +37,7 @@ app.post('/api/memos', async (req, res) => {
     console.log('query is not excuted: ' + err);
   }
 });
-
+// todo 수정
 app.put('/api/memos/:modalData', async (req, res) => {
   var sql = `UPDATE memos SET content = '${req.body.content}' WHERE id= ${req.params.modalData}`;
   try {
@@ -45,6 +46,17 @@ app.put('/api/memos/:modalData', async (req, res) => {
     res.send(rows);
   } catch (err) {
     console.log('query is not excuted: ' + err);
+  }
+});
+// todo 삭제
+app.get('/api/memos/delete/:modalData', async (req, res) => {
+  var sql = 'delete from memos where id=' + req.params.modalData;
+  try {
+    await conn.promise().query(sql);
+    const [rows] = await conn.promise().query('SELECT * FROM memos');
+    res.send(rows);
+  } catch (err) {
+    console.log('query is not executed: ' + err);
   }
 });
 
