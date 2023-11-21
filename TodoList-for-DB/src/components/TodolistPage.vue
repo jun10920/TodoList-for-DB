@@ -13,16 +13,21 @@
         <button class="remove-todo-button">-</button>
         <button class="add-todo-button" @click="addTodo()">+</button>
       </div>
-      <div v-for="(d, idx) in state.todoData" :key="idx" class="task-list">
+      <div v-for="d in state.todoData" :key="d.id" class="task-list">
         <span class="check-box">&#10003;</span>
-        <span>{{ d }}</span>
-        <span class="expand-button" @click="openModal()">...</span>
+        <span>{{ d.content }}</span>
+        <span class="expand-button" @click="openModal(id)">...</span>
       </div>
       <transition name="fade">
         <div class="modal" v-if="this.$store.getters.getPopState === true">
           <div class="modal-content">
             <div class="modal-btnBox">
-              <button class="modifyBtn">수정</button>
+              <button
+                class="modifyBtn"
+                @click="edit(this.$store.state.modalData)"
+              >
+                수정
+              </button>
               <button class="deleteBtn">삭제</button>
             </div>
             <button class="closeBtn" @click="closeModal()">닫기</button>
@@ -43,9 +48,31 @@ export default {
     });
     const addTodo = () => {
       const content = prompt('내용을 입력해주세요.');
+
+      if (!content) {
+        alert('내용을 입력해주세요.');
+        return addTodo();
+      }
+
       axios.post('/api/memos', { content }).then((res) => {
         state.todoData = res.data;
       });
+    };
+    const edit = (modalData) => {
+      const content = prompt(
+        '내용을 입력해주세요',
+        state.data.find?.((d) => d.id === modalData).content
+      );
+      axios
+        .put('/api/memos/' + modalData, { content })
+        .then((res) => {
+          state.todoData = res.data;
+          // 상태를 업데이트한 후에 필요한 작업을 수행합니다.
+        })
+        .catch((error) => {
+          console.error('There was an error!', error);
+          // 오류가 발생했을 때 필요한 작업을 수행합니다.
+        });
     };
     axios.get('/api/memos').then((res) => {
       state.todoData = res.data;
@@ -58,11 +85,13 @@ export default {
       personalInfo_state: false,
       modalPage_state: false,
       addTodo,
+      edit,
     };
   },
   methods: {
-    openModal() {
+    openModal(id) {
       this.$store.commit('popStateChange', true);
+      this.$store.commit('setModalData', id);
     },
     closeModal() {
       this.$store.commit('popStateChange', false);
