@@ -7,7 +7,7 @@ const cors = require('cors');
 const fs = require('fs');
 const conn = db.init();
 
-const memos = [];
+// const memos = [];
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -19,7 +19,7 @@ app.set('host', process.env.HOST || '0.0.0.0'); // 아이피 설정
 app.get('/api/memos', async (req, res) => {
   var sql = 'SELECT * FROM memos';
   try {
-    const [rows, fields] = await conn.promise().query(sql);
+    const [rows] = await conn.promise().query(sql);
     res.send(rows);
   } catch (err) {
     console.log('query is not executed: ' + err);
@@ -38,7 +38,7 @@ app.post('/api/memos', async (req, res) => {
 });
 
 app.put('/api/memos/:modalData', async (req, res) => {
-  var sql = `UPDATE memos SET content = '${req.body.content}' WHERE id= '${req.params.modalData}'`;
+  var sql = `UPDATE memos SET content = '${req.body.content}' WHERE id= ${req.params.modalData}`;
   try {
     await conn.promise().query(sql);
     const [rows] = await conn.promise().query('SELECT * FROM memos');

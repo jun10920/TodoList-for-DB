@@ -16,7 +16,7 @@
       <div v-for="d in state.todoData" :key="d.id" class="task-list">
         <span class="check-box">&#10003;</span>
         <span>{{ d.content }}</span>
-        <span class="expand-button" @click="openModal(id)">...</span>
+        <span class="expand-button" @click="openModal(d.id)">...</span>
       </div>
       <!--모달-->
       <transition name="fade">
@@ -62,7 +62,7 @@ export default {
     const edit = (modalData) => {
       const content = prompt(
         '내용을 입력해주세요',
-        state.data.find?.((d) => d.id === modalData).content
+        state.todoData.find((d) => d.id === modalData).content
       );
       axios
         .put('/api/memos/' + modalData, { content })

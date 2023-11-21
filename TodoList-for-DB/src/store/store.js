@@ -3,6 +3,7 @@ import { createStore } from 'vuex';
 const store = createStore({
   state: {
     popState: false,
+    modalData: null,
   },
 
   getters: {
