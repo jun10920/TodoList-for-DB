@@ -40,7 +40,7 @@
 export default {
   data() {
     return {
-      startPage_state: true,
+      startPage_state: false,
       signUpPage_state: false,
       todoListPage_state: false,
       personalInfo_state: false,

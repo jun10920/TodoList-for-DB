@@ -8,10 +8,9 @@
         false), (personalInfo_state = true)" >
         <!-- 이미지 크기 조절 -->
       </div>
-      <div class="todoInput">
-        <input type="text" id="todoInput" placeholder="todo를 입력하세요" />
-        <button class="remove-todo-button">-</button>
-        <button class="add-todo-button" @click="addTodo()">+</button>
+      <div class="controlBtnBox">
+        <button class="add-todo-button" @click="addTodo()">ADD</button>
+        <button class="reset-todo-button">RESET</button>
       </div>
       <div v-for="d in state.todoData" :key="d.id" class="task-list">
         <span class="check-box">&#10003;</span>
@@ -22,8 +21,39 @@
       <transition name="fade">
         <div class="modal" v-if="this.$store.getters.getPopState === true">
           <div class="modal-content">
+            <h2 style="text-align: center; color: white">ADD TODO</h2>
             <div class="modal-btnBox">
-              <button
+              <p class="addText">어떤 일인가요?</p>
+              <input
+                type="text"
+                name="title"
+                placeholder="Java 공부하기 (24자까지)"
+                maxlength="24"
+                required
+              /><br />
+              <div class="rankBox">
+                <p class="addText">우선순위를 선택하세요.</p>
+                <div class="rank">
+                  <div class="labelBox">
+                    <label
+                      ><input
+                        type="radio"
+                        name="rank"
+                        value="1"
+                        checked="checked"
+                      />1순위</label
+                    >
+                    <label
+                      ><input type="radio" name="rank" value="2" />2순위</label
+                    >
+                    <label
+                      ><input type="radio" name="rank" value="3" />3순위</label
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- <button
                 class="modifyBtn"
                 @click="edit(this.$store.state.modalData)"
               >
@@ -34,9 +64,12 @@
                 @click="deleteTodo(this.$store.state.modalData)"
               >
                 삭제
-              </button>
+              </button> -->
             </div>
-            <button class="closeBtn" @click="closeModal()">닫기</button>
+            <div class="modal-footer-btnBox">
+              <button @click="addTodo()">등록</button>
+              <button @click="closeModal()">닫기</button>
+            </div>
           </div>
         </div>
       </transition>
@@ -106,7 +139,7 @@ export default {
 
     return {
       state,
-      startPage_state: true,
+      startPage_state: false,
       signUpPage_state: false,
       todoListPage_state: true,
       personalInfo_state: false,
@@ -139,17 +172,16 @@ export default {
   color: #555;
   cursor: pointer;
 }
-.todoInput,
+.controlBtnBox,
 .task-list {
+  justify-content: space-around;
   display: flex;
   position: relative;
-  border: 1px solid #ccc;
-  border-radius: 5px;
   padding: 10px;
   margin-top: 10px;
   height: 55px;
 }
-.todoInput {
+.controlBtnBox {
   align-items: center;
 }
 .task-list {
@@ -161,35 +193,26 @@ export default {
   display: flex;
   align-items: center;
 }
-.todoInput label {
+.controlBtnBox label {
   margin: 0;
   padding-right: 25px;
 }
-#todoInput {
-  width: 85%;
-  margin: 0;
-  margin-right: 5px;
-  text-align: center;
-}
 
 /* "+" 버튼 스타일 */
+
 .add-todo-button,
-.remove-todo-button {
-  background-color: white;
-  font-size: 25px;
-  color: black;
+.reset-todo-button {
+  box-shadow: 1px 1px 3px 1px grey;
+  background-color: #333;
+  border: none;
+  color: white;
+  font-size: 20px;
   cursor: pointer;
-  width: auto;
+  width: 80px;
   height: auto;
   padding: 7px;
   margin-left: 7px;
   justify-content: center;
-}
-
-/* "-" 버튼 스타일 */
-.remove-todo-button {
-  color: #f00;
-  margin-right: 2px;
 }
 
 /* 체크 표시 칸 스타일 */
@@ -224,31 +247,63 @@ export default {
   animation-name: fadeIn;
   animation-duration: 0.7s;
   position: fixed;
-  top: 35%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 3;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: auto;
+  height: auto;
 }
 .modal .modal-content {
   display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
+  background-color: #333;
+  font-size: 22px;
+  font-weight: 600;
+  text-align: left;
+  width: 400px;
+  height: auto;
+  box-shadow: 2px 3px rgba(0, 0, 0, 0.06), 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+  padding: 1.5rem 1.5rem;
+  border-radius: 10px;
 }
-.modal-content div {
-  width: 250px;
+.modal-content h2 {
+  border-bottom: 1px solid white;
+}
+.modal-conten p {
+  font-size: 5px;
 }
 .modal-btnBox {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   color: white;
   justify-content: space-between;
+  width: 350px;
 }
-.modal-btnBox button {
-  width: 123px;
+.modal-btnBox input {
+  width: 350px;
+}
+.rank {
+  display: flex;
+  flex-direction: column;
+}
+.labelBox {
+  display: flex;
+  flex-direction: row;
+}
+.labelBox input {
+  width: 20px;
+}
+.labelBox label {
+  display: flex;
+  flex-direction: row;
+  font-size: 15px;
+}
+.modal-footer-btnBox {
+  width: 350px;
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
 }
 /* 모달 창에 애니메이션 적용 */
 .fade-leave-active {
