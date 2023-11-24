@@ -1,36 +1,77 @@
 <template>
-  <div id="signupPage" v-if="signUpPage_state === true">
+  <div id="signupPage" v-if="this.$store.state.signUpPage_state === true">
     <h1>ToDoList</h1>
     <div id="totalBox" class="signUpPage_box">
       <h2>가입하기</h2>
       <label for="username">아이디</label>
-      <input type="text" id="username" placeholder="아이디를 입력하세요" />
+      <input
+        type="text"
+        id="userid"
+        placeholder="아이디를 입력하세요"
+        v-model="state.userid"
+      />
       <label for="password">비밀번호</label>
       <input
         type="password"
         id="password"
         placeholder="비밀번호를 입력하세요"
+        v-model="state.userpw"
       />
       <label for="nickname">닉네임</label>
-      <input type="text" id="nickname" placeholder="닉네임을 입력하세요" />
-      <button
-        @click="(signUpPage_state = false), (startPage_state = true)"
-        id="signup-button"
-      >
-        회원가입
-      </button>
+      <input
+        type="text"
+        id="nickname"
+        placeholder="닉네임을 입력하세요"
+        v-model="state.nickname"
+      />
+      <button id="signup-button" @click="signup()">회원가입</button>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+import { reactive } from 'vue';
 export default {
-  data() {
+  setup() {
+    const state = reactive({
+      userid: '',
+      userpw: '',
+      nickname: '',
+    });
+    // 회원가입
+    const signup = () => {
+      const userid = state.userid;
+      const userpw = state.userpw;
+      const nickname = state.nickname;
+
+      if (!userid) {
+        console.log(userid);
+        alert('ID를 입력해주세요.');
+        return;
+      }
+      if (!userpw) {
+        alert('비밀번호를 입력해주세요.');
+        return;
+      }
+      if (!nickname) {
+        alert('닉네임을 입력해주세요.');
+        return;
+      }
+      axios
+        .post('/api/todos', { userid, userpw, nickname })
+        .then((res) => {
+          alert(res.data.message);
+          this.$store.commit('signUpPage_state_change', false);
+          this.$store.commit('startPage_state_change', true);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
     return {
-      startPage_state: false,
-      signUpPage_state: false,
-      todoListPage_state: false,
-      personalInfo_state: false,
+      state,
+      signup,
     };
   },
   methods: {},

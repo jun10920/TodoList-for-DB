@@ -9,7 +9,8 @@
         <!-- 이미지 크기 조절 -->
       </div>
       <div class="controlBtnBox">
-        <button class="add-todo-button" @click="addTodo()">ADD</button>
+        <button class="add-todo-button" @click="openModal()">ADD</button>
+        <!-- @click="addTodo()" -->
         <button class="reset-todo-button">RESET</button>
       </div>
       <div v-for="d in state.todoData" :key="d.id" class="task-list">
@@ -30,6 +31,7 @@
                 placeholder="Java 공부하기 (24자까지)"
                 maxlength="24"
                 required
+                v-model="state.addContent"
               /><br />
               <div class="rankBox">
                 <p class="addText">우선순위를 선택하세요.</p>
@@ -41,13 +43,24 @@
                         name="rank"
                         value="1"
                         checked="checked"
+                        v-model="state.selectedRank"
                       />1순위</label
                     >
                     <label
-                      ><input type="radio" name="rank" value="2" />2순위</label
+                      ><input
+                        type="radio"
+                        name="rank"
+                        value="2"
+                        v-model="state.selectedRank"
+                      />2순위</label
                     >
                     <label
-                      ><input type="radio" name="rank" value="3" />3순위</label
+                      ><input
+                        type="radio"
+                        name="rank"
+                        value="3"
+                        v-model="selectedRank"
+                      />3순위</label
                     >
                   </div>
                 </div>
@@ -80,25 +93,26 @@
 <script>
 import axios from 'axios';
 import { reactive } from 'vue';
+// import { ContextExclusionPlugin } from 'webpack';
 export default {
   setup() {
     const state = reactive({
       todoData: [],
+      addContent: '',
+      selectedRank: '',
     });
     // 실행 시 db 데이터 들고오기
-    axios.get('/api/memos').then((res) => {
-      state.todoData = res.data;
-    });
+    // axios.get('/api/todos').then((res) => {
+    //   state.todoData = res.data;
+    // });
     // todo 추가
     const addTodo = () => {
-      const content = prompt('내용을 입력해주세요.');
-
+      const content = state.addContent;
       if (!content) {
         alert('내용을 입력해주세요.');
         return addTodo();
       }
-
-      axios.post('/api/memos', { content }).then((res) => {
+      axios.post('/api/todos', { content }).then((res) => {
         state.todoData = res.data;
       });
     };
@@ -113,7 +127,7 @@ export default {
         return edit(modalData);
       }
       axios
-        .put('/api/memos/' + modalData, { content })
+        .put('/api/todos/' + modalData, { content })
         .then((res) => {
           state.todoData = res.data;
           // 상태를 업데이트한 후에 필요한 작업을 수행합니다.
@@ -126,7 +140,7 @@ export default {
     // todo 삭제
     const deleteTodo = (modalData) => {
       axios
-        .get('/api/memos/delete/' + modalData)
+        .get('/api/todos/delete/' + modalData)
         .then((res) => {
           state.todoData = res.data;
           // 상태를 업데이트한 후에 필요한 작업을 수행합니다.
@@ -136,14 +150,8 @@ export default {
           // 오류가 발생했을 때 필요한 작업을 수행합니다.
         });
     };
-
     return {
       state,
-      startPage_state: false,
-      signUpPage_state: false,
-      todoListPage_state: true,
-      personalInfo_state: false,
-      modalPage_state: false,
       addTodo,
       edit,
       deleteTodo,
@@ -303,7 +311,7 @@ export default {
   width: 350px;
   display: flex;
   flex-direction: row;
-  justify-content: end;
+  justify-content: flex-end;
 }
 /* 모달 창에 애니메이션 적용 */
 .fade-leave-active {

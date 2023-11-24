@@ -1,27 +1,34 @@
 <template>
-  <div id="startPage_login" v-if="startPage_state === true">
+  <div id="startPage_login" v-if="this.$store.state.startPage_state === true">
     <h1>ToDoList</h1>
     <div id="totalBox">
       <h2><img src="../assets/logo2.png" alt="로고 이미지" /></h2>
       <label for="username">아이디</label>
-      <input type="text" id="username" placeholder="아이디를 입력하세요" />
+      <input
+        type="text"
+        id="username"
+        name=""
+        placeholder="아이디를 입력하세요"
+        maxlength="20"
+        required
+      />
       <label for="password">비밀번호</label>
       <input
         type="password"
         id="password"
+        name=""
         placeholder="비밀번호를 입력하세요"
+        maxlength="20"
+        required
       />
       <div class="button-box">
-        <button
-          @click="(todoListPage_state = true), (startPage_state = false)"
-          id="login-button"
-        >
-          로그인
-        </button>
+        <button type="submit" value="로그인" id="login-button">로그인</button>
         <div class="lower-buttonBox">
           <button
-            @click="(signUpPage_state = true), (startPage_state = false)"
+            type="submit"
+            value="회원가입"
             class="signup-button"
+            @click="openSignupPage()"
           >
             회원가입
           </button>
@@ -32,16 +39,19 @@
 </template>
 
 <script>
+// import axios from 'axios';
+// import { reactive } from 'vue';
 export default {
-  data() {
-    return {
-      startPage_state: false,
-      signUpPage_state: false,
-      todoListPage_state: false,
-      personalInfo_state: false,
-    };
+  setup() {
+    // const state = reactive({});
+    return {};
   },
-  methods: {},
+  methods: {
+    openSignupPage() {
+      this.$store.commit('signUpPage_state_change', true);
+      this.$store.commit('startPage_state_change', false);
+    },
+  },
   components: {},
 };
 </script>

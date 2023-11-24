@@ -5,7 +5,7 @@ var db_info = {
   port: '3300', // 데이터베이스 포트
   user: 'root', // 로그인 계정
   password: 'hyoung12!@', // 비밀번호
-  database: 'memo', // 엑세스할 데이터베이스
+  database: 'todo', // 엑세스할 데이터베이스
 };
 
 module.exports = {
