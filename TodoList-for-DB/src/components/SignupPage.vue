@@ -32,6 +32,7 @@
 <script>
 import axios from 'axios';
 import { reactive } from 'vue';
+import store from '../store/store';
 export default {
   setup() {
     const state = reactive({
@@ -61,9 +62,17 @@ export default {
       axios
         .post('/api/todos', { userid, userpw, nickname })
         .then((res) => {
-          alert(res.data.message);
-          this.$store.commit('signUpPage_state_change', false);
-          this.$store.commit('startPage_state_change', true);
+          if (
+            res.data.message === '비밀번호를 4자 이상 입력하세요.' ||
+            res.data.message === '아이디를 4자 이상 입력하세요.' ||
+            res.data.message === '이름을 2자 이상 입력하세요.'
+          ) {
+            alert(res.data.message);
+          } else {
+            alert(res.data.message);
+            store.commit('signUpPage_state_change', false);
+            store.commit('startPage_state_change', true);
+          }
         })
         .catch((error) => {
           console.error(error);

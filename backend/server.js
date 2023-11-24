@@ -65,6 +65,9 @@ app.post('/api/todos', async (req, res) => {
         return false;
       }
     } else {
+      res.send({
+        message: result,
+      });
     }
   } catch (err) {
     console.log(err);
