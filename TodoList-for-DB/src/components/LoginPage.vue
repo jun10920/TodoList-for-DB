@@ -75,6 +75,9 @@ export default {
             store.commit('todoListPage_state_change', true);
           } else if (res.data.message === '로그인에 실패했습니다.') {
             alert(res.data.message);
+          } else if (res.data.message === '세션 유저데이터 있음 - todo 이동') {
+            store.commit('startPage_state_change', false);
+            store.commit('todoListPage_state_change', true);
           }
         })
         .catch((error) => {

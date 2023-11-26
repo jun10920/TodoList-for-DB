@@ -61,7 +61,6 @@
                         type="radio"
                         name="rank"
                         value="1"
-                        checked="checked"
                         v-model="state.selectedRank"
                       />1순위</label
                     >
@@ -78,7 +77,7 @@
                         type="radio"
                         name="rank"
                         value="3"
-                        v-model="selectedRank"
+                        v-model="state.selectedRank"
                       />3순위</label
                     >
                   </div>
@@ -112,6 +111,7 @@
 <script>
 import axios from 'axios';
 import { reactive } from 'vue';
+import store from '../store/store';
 // import { ContextExclusionPlugin } from 'webpack';
 export default {
   setup() {
@@ -124,9 +124,17 @@ export default {
     });
     // 실행 시 db 데이터 들고오기
     axios.get('/api/todos').then((res) => {
-      state.todoData = res.data.todoList;
-      state.doingList = res.data.doingList;
-      state.doneList = res.data.doneList;
+      if (res.data.message === '로그인정보 있음') {
+        state.todoList = res.data.todos.todoList;
+        state.doingList = res.data.todos.doingList;
+        state.doneList = res.data.todos.doneList;
+        // todolistpage로 이동
+        store.commit('startPage_state_change', false);
+        store.commit('todoListPage_state_change', true);
+      } else if (res.data.message === '로그인정보 없음') {
+        store.commit('startPage_state_change', true);
+        store.commit('todoListPage_state_change', false);
+      }
     });
 
     // todo 추가
@@ -135,12 +143,12 @@ export default {
       let rank = state.selectedRank;
       if (!content) {
         alert('내용을 입력해주세요.');
-        return addTodo();
+        return;
       }
       axios.post('/api/todos/addTodo', { content, rank }).then((res) => {
-        state.todoList = res.todoList;
-        state.doingList = res.doingList;
-        state.doneList = res.doneList;
+        state.todoList = res.data.todoList;
+        state.doingList = res.data.doingList;
+        state.doneList = res.data.doneList;
       });
     };
     // todo 수정
