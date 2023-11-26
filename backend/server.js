@@ -135,51 +135,96 @@ app.post('/api/todos/login', async (req, res) => {
 });
 
 // 실행 시 db 데이터 들고오기
-// app.get('/api/todos', async (req, res) => {
-//   var sql =
-//     'SELECT * FROM `todo` WHERE `userid` = ? ORDER BY `rank` ASC, `id` ASC;';
-//   try {
-//     await conn.promise().query(sql);
-//     var rows_todo = [],
-//       rows_doing = [],
-//       rows_done = [];
-//     var todo_sign = 0,
-//       doing_sign = 0,
-//       done_sign = 0;
-//     for (var i = 0; i < rows.length; i++) {
-//       if (rows[i].status == 1) {
-//         rows_todo[todo_sign] = rows[i];
-//         todo_sign++;
-//       } else if (rows[i].status == 2) {
-//         rows_doing[doing_sign] = rows[i];
-//         doing_sign++;
-//       } else if (rows[i].status == 3) {
-//         rows_done[done_sign] = rows[i];
-//         done_sign++;
-//       }
-//     }
-//     console.log('데이터 성공적 분류함');
-//     res.send(data, {
-//       todoList: rows_todo,
-//       doingList: rows_doing,
-//       doneList: rows_done,
-//     });
-//     return true;
-//   } catch (err) {
-//     console.log('query is not executed: ' + err);
-//   }
-// });
-// todo 추가
-app.post('/api/todos', async (req, res) => {
-  var sql = `INSERT INTO todos (content) VALUES ('${req.body.content}')`;
-  try {
-    await conn.promise().query(sql);
-    const [rows] = await conn.promise().query('SELECT * FROM todos');
-    res.send(rows);
-  } catch (err) {
-    console.log('query is not excuted: ' + err);
+
+app.get('/api/todos', async (req, res) => {
+  if (req.session.user) {
+    try {
+      const [rows] = await conn
+        .promise()
+        .query(
+          'SELECT * FROM `todo` WHERE `userid` = ? ORDER BY `rank` ASC, `id` ASC;',
+          [logined_userid]
+        );
+      // res.send(row1);
+      var rows_todo = [],
+        rows_doing = [],
+        rows_done = [];
+      var todo_sign = 0,
+        doing_sign = 0,
+        done_sign = 0;
+
+      for (var i = 0; i < rows.length; i++) {
+        if (rows[i].status == 1) {
+          rows_todo[todo_sign] = rows[i];
+          todo_sign++;
+        } else if (rows[i].status == 2) {
+          rows_doing[doing_sign] = rows[i];
+          doing_sign++;
+        } else if (rows[i].status == 3) {
+          rows_done[done_sign] = rows[i];
+          done_sign++;
+        }
+      }
+      console.log('데이터 성공적 분류함');
+      res.send(data, {
+        todoList: rows_todo,
+        doingList: rows_doing,
+        doneList: rows_done,
+      });
+      return true;
+    } catch (err) {
+      console.log('query is not executed: ' + err);
+    }
+  } else {
+    console.log('로그인정보 없음 - 로그인 이동');
+    res.send({
+      message: '로그인정보 없음 - 로그인 이동',
+    });
+    return true;
   }
 });
+
+// todo 등록 함수
+const addTodo = function (content, rank) {
+  console.log('todo 등록 함수 호출됨');
+  let data = {
+    userid: logined_userid,
+    content: content,
+    rank: rank,
+  };
+  try {
+    const exec = conn.query('insert into todos set ?', data);
+    console.log('실행 대상 SQL: ' + exec.sql);
+    return;
+  } catch (err) {
+    console.log('SQL 실행 오류 발생');
+    console.dir(err);
+    throw err;
+  }
+};
+
+// todo 추가
+app.post('/api/todos/addTodo', async (req, res) => {
+  console.log('todo 추가 라우터 호출됨');
+
+  let paramContent = req.body.content;
+  let paramRank = req.body.rank;
+  try {
+    const addedTodo = await addTodo(paramContent, paramRank);
+    if (addedTodo) {
+      console.dir(addedTodo);
+      console.log('inserted ' + addedTodo.affectedRows + ' rows');
+      const insertId = addedTodo.insertId;
+      console.log('추가한 레코드 ID: ' + insertId);
+      return;
+    }
+  } catch (err) {
+    console.error('추가 중 오류: ' + err.stack);
+    res.end();
+    return;
+  }
+});
+
 // todo 수정
 app.put('/api/todos/:modalData', async (req, res) => {
   var sql = `UPDATE todos SET content = '${req.body.content}' WHERE id= ${req.params.modalData}`;

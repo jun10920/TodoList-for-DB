@@ -1,5 +1,5 @@
 <template>
-  <div id="todoListPage" v-if="todoListPage_state === true">
+  <div id="todoListPage" v-if="this.$store.state.todoListPage_state === true">
     <h1>ToDoList</h1>
     <div id="totalBox">
       <div class="user-icon">
@@ -13,11 +13,30 @@
         <!-- @click="addTodo()" -->
         <button class="reset-todo-button">RESET</button>
       </div>
-      <div v-for="d in state.todoData" :key="d.id" class="task-list">
-        <span class="check-box">&#10003;</span>
-        <span>{{ d.content }}</span>
-        <span class="expand-button" @click="openModal(d.id)">...</span>
+      <div class="wrapperBox">
+        <div class="sec_wrapper" id="todo_wrapper">
+          <span class="wrapper-name">할 일</span>
+          <div v-for="d in state.todoList" :key="d.id" class="task-list">
+            <span class="todo-content">{{ d.content }}</span>
+            <span class="todo-rank">{{ d.rank }}</span>
+          </div>
+        </div>
+        <div class="sec_wrapper" id="doing_wrapper">
+          <span class="wrapper-name">하고 있는 일</span>
+          <div v-for="d in state.doingList" :key="d.id" class="task-list">
+            <span class="todo-content">{{ d.content }}</span>
+            <span class="todo-rank">{{ d.rank }}</span>
+          </div>
+        </div>
+        <div class="sec_wrapper" id="done_wrapper">
+          <span class="wrapper-name">한 일</span>
+          <div v-for="d in state.doneList" :key="d.id" class="task-list">
+            <span class="todo-content">{{ d.content }}</span>
+            <span class="todo-rank">{{ d.rank }}</span>
+          </div>
+        </div>
       </div>
+
       <!--모달-->
       <transition name="fade">
         <div class="modal" v-if="this.$store.getters.getPopState === true">
@@ -97,23 +116,31 @@ import { reactive } from 'vue';
 export default {
   setup() {
     const state = reactive({
-      todoData: [],
+      todoList: [],
+      doingList: [],
+      doneList: [],
       addContent: '',
       selectedRank: '',
     });
     // 실행 시 db 데이터 들고오기
-    // axios.get('/api/todos').then((res) => {
-    //   state.todoData = res.data;
-    // });
+    axios.get('/api/todos').then((res) => {
+      state.todoData = res.data.todoList;
+      state.doingList = res.data.doingList;
+      state.doneList = res.data.doneList;
+    });
+
     // todo 추가
     const addTodo = () => {
-      const content = state.addContent;
+      let content = state.addContent;
+      let rank = state.selectedRank;
       if (!content) {
         alert('내용을 입력해주세요.');
         return addTodo();
       }
-      axios.post('/api/todos', { content }).then((res) => {
-        state.todoData = res.data;
+      axios.post('/api/todos/addTodo', { content, rank }).then((res) => {
+        state.todoList = res.todoList;
+        state.doingList = res.doingList;
+        state.doneList = res.doneList;
       });
     };
     // todo 수정
@@ -130,11 +157,9 @@ export default {
         .put('/api/todos/' + modalData, { content })
         .then((res) => {
           state.todoData = res.data;
-          // 상태를 업데이트한 후에 필요한 작업을 수행합니다.
         })
         .catch((error) => {
           console.error('There was an error!', error);
-          // 오류가 발생했을 때 필요한 작업을 수행합니다.
         });
     };
     // todo 삭제
@@ -143,11 +168,9 @@ export default {
         .get('/api/todos/delete/' + modalData)
         .then((res) => {
           state.todoData = res.data;
-          // 상태를 업데이트한 후에 필요한 작업을 수행합니다.
         })
         .catch((error) => {
           console.error('There was an error!', error);
-          // 오류가 발생했을 때 필요한 작업을 수행합니다.
         });
     };
     return {
@@ -170,35 +193,30 @@ export default {
 };
 </script>
 
+<style scoped>
+#totalBox {
+  width: 900px;
+}
+</style>
 <style>
 #todoListPage {
   position: relative;
   z-index: 1;
+  width: 900px;
 }
+
 .user-icon {
   font-size: 10px; /* 아이콘 크기를 조절 */
   color: #555;
   cursor: pointer;
 }
-.controlBtnBox,
-.task-list {
+.controlBtnBox {
   justify-content: space-around;
   display: flex;
   position: relative;
   padding: 10px;
   margin-top: 10px;
   height: 55px;
-}
-.controlBtnBox {
-  align-items: center;
-}
-.task-list {
-  justify-content: center;
-}
-.task-list :nth-child(2) {
-  margin-right: 40px;
-  margin-left: 40px;
-  display: flex;
   align-items: center;
 }
 .controlBtnBox label {
@@ -206,8 +224,7 @@ export default {
   padding-right: 25px;
 }
 
-/* "+" 버튼 스타일 */
-
+/* "ADD" 버튼 스타일 */
 .add-todo-button,
 .reset-todo-button {
   box-shadow: 1px 1px 3px 1px grey;
@@ -239,6 +256,39 @@ export default {
   cursor: pointer;
   font-size: 20px;
   color: #555;
+}
+/* todo 박스 관련 */
+.wrapperBox {
+  margin-top: 15px;
+  width: auto;
+  height: auto;
+  /* border: 1px solid black; */
+  display: flex;
+  justify-content: space-between;
+}
+.sec_wrapper {
+  width: 260px;
+  height: 45px;
+}
+.wrapper-name {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  width: 100%;
+  height: 100%;
+  margin-bottom: 15px;
+  background-color: #333;
+  color: white;
+  border-radius: 10px;
+  box-shadow: 1px 1px 3px 1px grey;
+}
+.task-list {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  box-shadow: 1px 1px 3px 1px grey;
+  border: 1px solid black;
 }
 /* 모달창 관련  */
 
