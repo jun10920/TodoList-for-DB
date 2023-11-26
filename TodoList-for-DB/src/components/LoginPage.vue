@@ -11,6 +11,7 @@
         placeholder="아이디를 입력하세요"
         maxlength="20"
         required
+        v-model="state.userid"
       />
       <label for="password">비밀번호</label>
       <input
@@ -20,9 +21,12 @@
         placeholder="비밀번호를 입력하세요"
         maxlength="20"
         required
+        v-model="state.userpw"
       />
       <div class="button-box">
-        <button type="submit" value="로그인" id="login-button">로그인</button>
+        <button type="submit" value="로그인" id="login-button" @click="login()">
+          로그인
+        </button>
         <div class="lower-buttonBox">
           <button
             type="submit"
@@ -40,16 +44,55 @@
 
 <script>
 // import axios from 'axios';
-// import { reactive } from 'vue';
+import { reactive } from 'vue';
+import store from '../store/store';
+import axios from 'axios';
 export default {
   setup() {
-    // const state = reactive({});
-    return {};
+    const state = reactive({
+      userid: '',
+      userpw: '',
+    });
+    const login = () => {
+      console.log('로그인 시작');
+      const userid = state.userid;
+      const userpw = state.userpw;
+      if (!userid) {
+        alert('ID를 입력해주세요.');
+        return;
+      }
+      if (!userpw) {
+        alert('비밀번호를 입력해주세요.');
+        return;
+      }
+      axios
+        .post('/api/todos/login', { userid, userpw })
+        .then((res) => {
+          if (res.data.message === '로그인 되었습니다.') {
+            alert(res.data.message);
+            // todolistpage로 이동
+            store.commit('startPage_state_change', false);
+            store.commit('todoListPage_state_change', true);
+          } else if (res.data.message === '로그인에 실패했습니다.') {
+            alert(res.data.message);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+
+    return {
+      state,
+      login,
+    };
   },
+
+  // 로그인
   methods: {
     openSignupPage() {
-      this.$store.commit('signUpPage_state_change', true);
-      this.$store.commit('startPage_state_change', false);
+      store.commit('signUpPage_state_change', true);
+      store.commit('startPage_state_change', false);
     },
   },
   components: {},

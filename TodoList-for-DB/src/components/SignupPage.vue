@@ -40,6 +40,7 @@ export default {
       userpw: '',
       nickname: '',
     });
+
     // 회원가입
     const signup = () => {
       const userid = state.userid;
@@ -47,7 +48,6 @@ export default {
       const nickname = state.nickname;
 
       if (!userid) {
-        console.log(userid);
         alert('ID를 입력해주세요.');
         return;
       }
@@ -60,13 +60,15 @@ export default {
         return;
       }
       axios
-        .post('/api/todos', { userid, userpw, nickname })
+        .post('/api/todos/register', { userid, userpw, nickname })
         .then((res) => {
           if (
             res.data.message === '비밀번호를 4자 이상 입력하세요.' ||
             res.data.message === '아이디를 4자 이상 입력하세요.' ||
             res.data.message === '이름을 2자 이상 입력하세요.'
           ) {
+            alert(res.data.message);
+          } else if (res.data.message === '중복된 아이디입니다.') {
             alert(res.data.message);
           } else {
             alert(res.data.message);

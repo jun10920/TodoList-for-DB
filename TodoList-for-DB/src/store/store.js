@@ -27,6 +27,9 @@ const store = createStore({
     signUpPage_state_change: function (state, value) {
       state.signUpPage_state = value;
     },
+    todoListPage_state_change: function (state, value) {
+      state.todoListPage_state = value;
+    },
     // 모달 관련
     setModalData(state, id) {
       state.modalData = id;

@@ -6,20 +6,29 @@ const db = require('./database.js');
 const cors = require('cors');
 const fs = require('fs');
 const conn = db.init();
+const session = require('express-session');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
+app.use(
+  session({
+    secret: 'my key',
+    resave: true,
+    saveUninitialized: true,
+    cookie: { secure: true },
+  })
+);
 
 app.set('port', process.env.PORT || 3000); // 포트 설정
 app.set('host', process.env.HOST || '0.0.0.0'); // 아이피 설정
+
 // 회원가입
-app.post('/api/todos', async (req, res) => {
+app.post('/api/todos/register', async (req, res) => {
   console.log('회원가입 라우터 호출됨');
   let paramId = req.body.userid;
   let paramPw = req.body.userpw;
   let paramNickname = req.body.nickname;
-  // let sql = `INSERT INTO todos (content) VALUES ('${req.body.content}')`;
   try {
     //회원가입 검증함수 실행
     var result = checkReg(paramId, paramPw, paramNickname);
@@ -36,7 +45,6 @@ app.post('/api/todos', async (req, res) => {
           nickName: paramNickname,
         });
       }
-      console.log('회원가입 시작');
       //SQL 회원가입 시작
       let regData = {
         userid: paramId,
@@ -76,16 +84,55 @@ app.post('/api/todos', async (req, res) => {
 
 //회원가입 검증 함수 for 라우터
 const checkReg = function (id, pw, nickName) {
-  if (pw.length < 4) {
+  if (pw.length < 3) {
     return '비밀번호를 4자 이상 입력하세요.';
-  } else if (id.length < 4) {
-    return '아이디를 4자 이상 입력하세요.';
+  } else if (id.length < 3) {
+    return '아이디를 3자 이상 입력하세요.';
   } else if (nickName.length < 2) {
     return '이름을 2자 이상 입력하세요.';
   }
 
   return 1;
 };
+
+// 로그인
+app.post('/api/todos/login', async (req, res) => {
+  console.log('로그인 라우터 호출됨');
+  if (req.session.user) {
+    console.log('세션 유저데이터 있음 - todo 이동');
+    // res.redirect('/');
+  } else {
+    let paramId = req.body.userid;
+    let paramPw = req.body.userpw;
+    try {
+      const [row] = await conn
+        .promise()
+        .query('SELECT * FROM `user` WHERE `userid`=? and `userpw`=?;', [
+          paramId,
+          paramPw,
+        ]);
+      if (row[0]) {
+        req.session.user = {
+          id: paramId,
+          authorized: true,
+        };
+        logined_userid = paramId;
+        res.send({
+          message: '로그인 되었습니다.',
+        });
+        return true;
+      } else {
+        console.log('로그인 정보 없음');
+        res.send({
+          message: '로그인에 실패했습니다.',
+        });
+        return true;
+      }
+    } catch (err) {
+      console.dir(err);
+    }
+  }
+});
 
 // 실행 시 db 데이터 들고오기
 // app.get('/api/todos', async (req, res) => {
