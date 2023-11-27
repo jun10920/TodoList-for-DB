@@ -18,21 +18,24 @@
           <span class="wrapper-name">할 일</span>
           <div v-for="d in state.todoList" :key="d.id" class="task-list">
             <span class="todo-content">{{ d.content }}</span>
-            <span class="todo-rank">{{ d.rank }}</span>
+            <span class="todo-rank">{{ d.rank }}순위</span>
+            <button class="t_pass" @click="passTodo1(d.id)">→</button>
           </div>
         </div>
         <div class="sec_wrapper" id="doing_wrapper">
           <span class="wrapper-name">하고 있는 일</span>
           <div v-for="d in state.doingList" :key="d.id" class="task-list">
             <span class="todo-content">{{ d.content }}</span>
-            <span class="todo-rank">{{ d.rank }}</span>
+            <span class="todo-rank">{{ d.rank }}순위</span>
+            <button class="t_pass" @click="passTodo2(d.id)">→</button>
           </div>
         </div>
         <div class="sec_wrapper" id="done_wrapper">
           <span class="wrapper-name">한 일</span>
           <div v-for="d in state.doneList" :key="d.id" class="task-list">
             <span class="todo-content">{{ d.content }}</span>
-            <span class="todo-rank">{{ d.rank }}</span>
+            <span class="todo-rank">{{ d.rank }}순위</span>
+            <button class="t_del">x</button>
           </div>
         </div>
       </div>
@@ -151,6 +154,35 @@ export default {
         state.doneList = res.data.doneList;
       });
     };
+
+    // todo status (1 > 2)변경
+    const passTodo1 = (id) => {
+      axios
+        .get('/api/todos/passTodo1/' + id)
+        .then((res) => {
+          state.todoList = res.data.todoList;
+          state.doingList = res.data.doingList;
+          state.doneList = res.data.doneList;
+        })
+        .catch((error) => {
+          console.error('There was an error!', error);
+        });
+    };
+
+    // todo status (2 > 3)변경
+    const passTodo2 = (id) => {
+      axios
+        .get('/api/todos/passTodo2/' + id)
+        .then((res) => {
+          state.todoList = res.data.todoList;
+          state.doingList = res.data.doingList;
+          state.doneList = res.data.doneList;
+        })
+        .catch((error) => {
+          console.error('There was an error!', error);
+        });
+    };
+
     // todo 수정
     const edit = (modalData) => {
       const content = prompt(
@@ -186,6 +218,8 @@ export default {
       addTodo,
       edit,
       deleteTodo,
+      passTodo1,
+      passTodo2,
     };
   },
   methods: {
@@ -204,6 +238,7 @@ export default {
 <style scoped>
 #totalBox {
   width: 900px;
+  border: none;
 }
 </style>
 <style>
@@ -211,6 +246,10 @@ export default {
   position: relative;
   z-index: 1;
   width: 900px;
+  height: 1200px;
+  margin: 0 auto;
+  border: 1px solid #ccc;
+  background-color: #fff;
 }
 
 .user-icon {
@@ -294,9 +333,39 @@ export default {
 .task-list {
   width: 100%;
   height: 100%;
-  border-radius: 10px;
+  margin-bottom: 10px;
+  border-radius: 7px;
   box-shadow: 1px 1px 3px 1px grey;
-  border: 1px solid black;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.todo-content {
+  font-weight: bold;
+}
+.todo-rank {
+  font-weight: 10;
+}
+.t_pass {
+  cursor: pointer;
+  width: auto;
+  color: #808080;
+  font-size: 10px;
+  background-color: #fff;
+  font-weight: 500;
+  padding: 10px;
+}
+
+.t_del {
+  cursor: pointer;
+  width: auto;
+  font-size: 20px;
+  background-color: #fff;
+  color: #a33937;
+  font-weight: 700;
+  padding: 5px;
 }
 /* 모달창 관련  */
 

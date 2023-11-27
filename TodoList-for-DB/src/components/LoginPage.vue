@@ -7,7 +7,6 @@
       <input
         type="text"
         id="username"
-        name=""
         placeholder="아이디를 입력하세요"
         maxlength="20"
         required
@@ -17,7 +16,6 @@
       <input
         type="password"
         id="password"
-        name=""
         placeholder="비밀번호를 입력하세요"
         maxlength="20"
         required

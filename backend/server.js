@@ -195,15 +195,6 @@ const addTodo = function (content, rank) {
 };
 
 // todo 화면 새로고침 때 todo 등록
-// app.get('/api/todos', async (req, res) => {
-//   try {
-//     const todos = await getTodos(conn, logined_userid);
-//     res.send(todos);
-//   } catch (err) {
-//     console.log('query is not executed: ' + err);
-//   }
-//   return true;
-// });
 app.get('/api/todos', async (req, res) => {
   if (req.session.user) {
     try {
@@ -234,6 +225,45 @@ app.post('/api/todos/addTodo', async (req, res) => {
     console.error('추가 중 오류: ' + err.stack);
     res.end();
     return;
+  }
+});
+// todo 상태(1 > 2) 변경
+app.get('/api/todos/passTodo1/:id', async (req, res) => {
+  let id = req.params.id;
+  try {
+    await conn
+      .promise()
+      .query('update todos set status = 2 where id = ? and userid = ?', [
+        id,
+        logined_userid,
+      ]);
+    const todos = await getTodos(conn, logined_userid);
+    res.send(todos);
+    console.log('status 변경 완료');
+  } catch (err) {
+    res.send(queryData);
+    console.log('status 변경 실패');
+    console.log('query is not excuted: ' + err);
+  }
+});
+
+// todo 상태(2 > 3) 변경
+app.get('/api/todos/passTodo2/:id', async (req, res) => {
+  let id = req.params.id;
+  try {
+    await conn
+      .promise()
+      .query('update todos set status = 3 where id = ? and userid = ?', [
+        id,
+        logined_userid,
+      ]);
+    const todos = await getTodos(conn, logined_userid);
+    res.send(todos);
+    console.log('status 변경 완료');
+  } catch (err) {
+    res.send(queryData);
+    console.log('status 변경 실패');
+    console.log('query is not excuted: ' + err);
   }
 });
 
