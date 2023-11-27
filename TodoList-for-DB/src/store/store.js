@@ -30,6 +30,9 @@ const store = createStore({
     todoListPage_state_change: function (state, value) {
       state.todoListPage_state = value;
     },
+    personalInfo_state_change: function (state, value) {
+      state.personalInfo_state = value;
+    },
     // 모달 관련
     setModalData(state, id) {
       state.modalData = id;

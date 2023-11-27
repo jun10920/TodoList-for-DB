@@ -2,11 +2,12 @@
   <div id="todoListPage" v-if="this.$store.state.todoListPage_state === true">
     <h1>ToDoList</h1>
     <div id="totalBox">
-      <div>{{ state.nickName }}님의 투두리스트</div>
-      <div class="user-icon">
-        <img src="../assets/member icon.png" alt="Member Icon" style="width:
-        45px; height: 45px;" cursor: pointer @click="(todoListPage_state =
-        false), (personalInfo_state = true)" >
+      <div class="introText">
+        {{ state.nickName }}님의 투두리스트
+        <div class="user-icon">
+          <img src="../assets/member icon.png" alt="Member Icon" style="width:
+          45px; height: 45px;" cursor: pointer @click="goInfo()" >
+        </div>
       </div>
       <div class="controlBtnBox">
         <button class="add-todo-button" @click="openModal()">ADD</button>
@@ -98,19 +99,6 @@
                   </div>
                 </div>
               </div>
-
-              <!-- <button
-                class="modifyBtn"
-                @click="edit(this.$store.state.modalData)"
-              >
-                수정
-              </button>
-              <button
-                class="deleteBtn"
-                @click="deleteTodo(this.$store.state.modalData)"
-              >
-                삭제
-              </button> -->
             </div>
             <div class="modal-footer-btnBox">
               <button @click="addTodo()">등록</button>
@@ -268,6 +256,10 @@ export default {
     };
   },
   methods: {
+    goInfo() {
+      store.commit('personalInfo_state_change', true);
+      store.commit('todoListPage_state_change', false);
+    },
     openModal(id) {
       this.$store.commit('popStateChange', true);
       this.$store.commit('setModalData', id);
@@ -296,8 +288,23 @@ export default {
   border: 1px solid #ccc;
   background-color: #fff;
 }
-
+.introText {
+  /* @import url(//fonts.googleapis.com/earlyaccess/jejugothic.css); */
+  font-family: 'Jeju Gothic', sans-serif;
+  font-size: 2.5em;
+  text-align: center;
+  color: black;
+  z-index: 1;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 0.5px solid rgb(173, 173, 173);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
 .user-icon {
+  position: absolute;
+  right: 40px;
   font-size: 10px; /* 아이콘 크기를 조절 */
   color: #555;
   cursor: pointer;

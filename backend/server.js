@@ -332,9 +332,56 @@ app.put('/api/todos/edit/:id', async (req, res) => {
       ]);
     const todos = await getTodos(conn, logined_userid);
     res.send(todos);
-    console.log('수정 완료');
+    console.log('TODO수정 완료');
   } catch (err) {
-    console.log('수정 실패');
+    console.log('TODO수정 실패');
+    console.log('query is not excuted: ' + err);
+  }
+});
+
+// 회원정보 수정 라우터
+app.put('/api/todos/change/', async (req, res) => {
+  let Pw = req.body.chagnePw;
+  let Nickname = req.body.chagneNickname;
+  try {
+    if (Pw !== '' && Nickname !== '') {
+      await conn
+        .promise()
+        .query('UPDATE user SET userpw = ?, nickname = ? WHERE userid = ?', [
+          Pw,
+          Nickname,
+          logined_userid,
+        ]);
+      console.log(Pw);
+      res.send({
+        message: '회원정보 수정 완료',
+      });
+      console.log('회원정보 수정 완료');
+    } else if (Pw === '' && Nickname !== '') {
+      await conn
+        .promise()
+        .query('UPDATE user SET nickname =? WHERE userid =?', [
+          Nickname,
+          logined_userid,
+        ]);
+      res.send({
+        message: '닉네임 수정 완료',
+      });
+      console.log('닉네임 수정 완료');
+    } else if (Pw !== '' && Nickname === '') {
+      await conn
+        .promise()
+        .query('UPDATE user SET userpw =? WHERE userid =?', [
+          Pw,
+          logined_userid,
+        ]);
+      res.send({
+        message: '비밀번호 수정 완료',
+      });
+      console.log('비밀번호 수정 완료');
+    }
+  } catch (err) {
+    console.log('INFO수정 실패');
     console.log('query is not excuted: ' + err);
   }
 });

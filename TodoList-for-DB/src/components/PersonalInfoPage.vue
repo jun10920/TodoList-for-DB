@@ -1,52 +1,64 @@
 <template>
-  <div id="personalInfo" v-if="personalInfo_state === true">
+  <div id="personalInfo" v-if="this.$store.state.personalInfo_state === true">
     <h1>ToDoList</h1>
     <div id="totalBox">
       <h2>회원정보 수정</h2>
-      <label for="new-username">아이디 변경</label>
-      <input
-        type="text"
-        id="new-username"
-        placeholder="새로운 아이디를 입력하세요"
-      />
       <label for="new-password">비밀번호 변경</label>
       <input
         type="password"
         id="new-password"
         placeholder="새로운 비밀번호를 입력하세요"
+        v-model="state.chagnePw"
       />
       <label for="new-nickname">닉네임 변경</label>
       <input
         type="text"
         id="new-nickname"
         placeholder="새로운 닉네임을 입력하세요"
+        v-model="state.chagneNickname"
       />
-
       <div class="button-container">
-        <button
-          @click="(personalInfo_state = false), (todoListPage_state = true)"
-        >
-          뒤로가기
-        </button>
-        <button @click="(personalInfo_state = false), (startPage_state = true)">
-          로그아웃
-        </button>
+        <div class="upper-btnBox">
+          <button @click="goTodo()">뒤로가기</button>
+          <button @click="changeInfo()">수정하기</button>
+        </div>
+        <div class="lower-btnBox">
+          <button>로그아웃</button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+import store from '../store/store';
+import { reactive } from 'vue';
 export default {
-  data() {
-    return {
-      startPage_state: false,
-      signUpPage_state: false,
-      todoListPage_state: false,
-      personalInfo_state: false,
+  setup() {
+    const state = reactive({
+      chagnePw: '',
+      chagneNickname: '',
+    });
+    // 수정하기
+    const changeInfo = () => {
+      let chagnePw = state.chagnePw;
+      let chagneNickname = state.chagneNickname;
+      axios
+        .put('/api/todos/change/', { chagnePw, chagneNickname })
+        .then((res) => {
+          alert(res.data.message);
+        });
     };
+
+    return { state, changeInfo };
   },
-  methods: {},
+  methods: {
+    goTodo() {
+      store.commit('personalInfo_state_change', false);
+      store.commit('todoListPage_state_change', true);
+    },
+  },
   components: {},
 };
 </script>
@@ -55,14 +67,24 @@ export default {
 <style>
 .button-container {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
 }
 .button-container button {
-  margin-top: 10px;
-  width: 220px;
+  margin-top: 20px;
+  width: 180px;
   height: 70px;
   font-size: 25px;
+}
+.upper-btnBox {
+  display: flex;
+  justify-content: space-evenly;
+}
+.lower-btnBox {
+  display: flex;
+  justify-content: center;
+}
+.lower-btnBox button {
+  margin-top: 10px;
+  width: 86%;
 }
 </style>
