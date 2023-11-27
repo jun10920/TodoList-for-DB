@@ -212,6 +212,26 @@ app.get('/api/todos', async (req, res) => {
   }
 });
 
+// 닉네임 데이터 불러오기
+app.get('/api/todos/nickName', async (req, res) => {
+  if (req.session.user) {
+    try {
+      const [row] = await conn
+        .promise()
+        .query('SELECT nickname FROM user Where userid = ?', [logined_userid]);
+      res.send({ row, message: '로그인정보 있음' });
+    } catch (err) {
+      console.log('query is not executed: ' + err);
+    }
+  } else {
+    console.log('로그인정보 없음');
+    res.send({
+      message: '로그인정보 없음',
+    });
+    return true;
+  }
+});
+
 // todo 추가
 app.post('/api/todos/addTodo', async (req, res) => {
   console.log('todo 추가 라우터 호출됨');
@@ -241,7 +261,6 @@ app.get('/api/todos/passTodo1/:id', async (req, res) => {
     res.send(todos);
     console.log('status 변경 완료');
   } catch (err) {
-    res.send(queryData);
     console.log('status 변경 실패');
     console.log('query is not excuted: ' + err);
   }
@@ -261,32 +280,62 @@ app.get('/api/todos/passTodo2/:id', async (req, res) => {
     res.send(todos);
     console.log('status 변경 완료');
   } catch (err) {
-    res.send(queryData);
     console.log('status 변경 실패');
     console.log('query is not excuted: ' + err);
   }
 });
 
-// todo 수정
-app.put('/api/todos/:modalData', async (req, res) => {
-  var sql = `UPDATE todos SET content = '${req.body.content}' WHERE id= ${req.params.modalData}`;
+// todo 삭제
+app.get('/api/todos/delete/:id', async (req, res) => {
+  let id = req.params.id;
   try {
-    await conn.promise().query(sql);
-    const [rows] = await conn.promise().query('SELECT * FROM todos');
-    res.send(rows);
+    await conn
+      .promise()
+      .query('delete from todos where id = ? and status = 3 and userid = ?', [
+        id,
+        logined_userid,
+      ]);
+    const todos = await getTodos(conn, logined_userid);
+    res.send(todos);
+    console.log('삭제 완료');
   } catch (err) {
+    console.log('삭제 실패');
     console.log('query is not excuted: ' + err);
   }
 });
-// todo 삭제
-app.get('/api/todos/delete/:modalData', async (req, res) => {
-  var sql = 'delete from todos where id=' + req.params.modalData;
+
+// todo 리셋
+app.get('/api/todos/reset/', async (req, res) => {
   try {
-    await conn.promise().query(sql);
-    const [rows] = await conn.promise().query('SELECT * FROM todos');
-    res.send(rows);
+    await conn
+      .promise()
+      .query('delete from todos where userid = ?', [logined_userid]);
+    const todos = await getTodos(conn, logined_userid);
+    res.send(todos);
+    console.log('리셋 완료');
   } catch (err) {
-    console.log('query is not executed: ' + err);
+    console.log('리셋 실패');
+    console.log('query is not excuted: ' + err);
+  }
+});
+
+// todo 수정
+app.put('/api/todos/edit/:id', async (req, res) => {
+  let id = req.params.id;
+  try {
+    await conn
+      .promise()
+      .query('UPDATE todos SET content =? WHERE id=? and userid =?;', [
+        req.body.content,
+        id,
+        logined_userid,
+      ]);
+    const todos = await getTodos(conn, logined_userid);
+    res.send(todos);
+    console.log('수정 완료');
+  } catch (err) {
+    console.log('수정 실패');
+    console.log('query is not excuted: ' + err);
   }
 });
 

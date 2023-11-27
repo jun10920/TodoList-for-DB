@@ -2,40 +2,52 @@
   <div id="todoListPage" v-if="this.$store.state.todoListPage_state === true">
     <h1>ToDoList</h1>
     <div id="totalBox">
+      <div>{{ state.nickName }}님의 투두리스트</div>
       <div class="user-icon">
         <img src="../assets/member icon.png" alt="Member Icon" style="width:
         45px; height: 45px;" cursor: pointer @click="(todoListPage_state =
         false), (personalInfo_state = true)" >
-        <!-- 이미지 크기 조절 -->
       </div>
       <div class="controlBtnBox">
         <button class="add-todo-button" @click="openModal()">ADD</button>
         <!-- @click="addTodo()" -->
-        <button class="reset-todo-button">RESET</button>
+        <button class="reset-todo-button" @click="resetTodo()">RESET</button>
       </div>
       <div class="wrapperBox">
         <div class="sec_wrapper" id="todo_wrapper">
           <span class="wrapper-name">할 일</span>
           <div v-for="d in state.todoList" :key="d.id" class="task-list">
-            <span class="todo-content">{{ d.content }}</span>
-            <span class="todo-rank">{{ d.rank }}순위</span>
-            <button class="t_pass" @click="passTodo1(d.id)">→</button>
+            <span class="todo-content" @click="edit(d.id)">{{
+              d.content
+            }}</span>
+            <div>
+              <span class="todo-rank">{{ d.rank }}순위</span>
+              <button class="t_pass" @click="passTodo1(d.id)">→</button>
+            </div>
           </div>
         </div>
         <div class="sec_wrapper" id="doing_wrapper">
           <span class="wrapper-name">하고 있는 일</span>
           <div v-for="d in state.doingList" :key="d.id" class="task-list">
-            <span class="todo-content">{{ d.content }}</span>
-            <span class="todo-rank">{{ d.rank }}순위</span>
-            <button class="t_pass" @click="passTodo2(d.id)">→</button>
+            <span class="todo-content" @click="edit(d.id)">{{
+              d.content
+            }}</span>
+            <div>
+              <span class="todo-rank">{{ d.rank }}순위</span>
+              <button class="t_pass" @click="passTodo2(d.id)">→</button>
+            </div>
           </div>
         </div>
         <div class="sec_wrapper" id="done_wrapper">
           <span class="wrapper-name">한 일</span>
           <div v-for="d in state.doneList" :key="d.id" class="task-list">
-            <span class="todo-content">{{ d.content }}</span>
-            <span class="todo-rank">{{ d.rank }}순위</span>
-            <button class="t_del">x</button>
+            <span class="todo-content" @click="edit(d.id)">{{
+              d.content
+            }}</span>
+            <div>
+              <span class="todo-rank">{{ d.rank }}순위</span>
+              <button class="t_del" @click="deleteTodo(d.id)">x</button>
+            </div>
           </div>
         </div>
       </div>
@@ -124,6 +136,7 @@ export default {
       doneList: [],
       addContent: '',
       selectedRank: '',
+      nickName: '',
     });
     // 실행 시 db 데이터 들고오기
     axios.get('/api/todos').then((res) => {
@@ -131,6 +144,20 @@ export default {
         state.todoList = res.data.todos.todoList;
         state.doingList = res.data.todos.doingList;
         state.doneList = res.data.todos.doneList;
+        state.nickName = res.data.todos.nickName;
+        // todolistpage로 이동
+        store.commit('startPage_state_change', false);
+        store.commit('todoListPage_state_change', true);
+      } else if (res.data.message === '로그인정보 없음') {
+        store.commit('startPage_state_change', true);
+        store.commit('todoListPage_state_change', false);
+      }
+    });
+
+    // 닉네임 데이터 불러오기
+    axios.get('/api/todos/nickName').then((res) => {
+      if (res.data.message === '로그인정보 있음') {
+        state.nickName = res.data.row[0].nickname;
         // todolistpage로 이동
         store.commit('startPage_state_change', false);
         store.commit('todoListPage_state_change', true);
@@ -183,43 +210,61 @@ export default {
         });
     };
 
+    // todo 삭제
+    const deleteTodo = (id) => {
+      axios
+        .get('/api/todos/delete/' + id)
+        .then((res) => {
+          state.todoList = res.data.todoList;
+          state.doingList = res.data.doingList;
+          state.doneList = res.data.doneList;
+        })
+        .catch((error) => {
+          console.error('There was an error!', error);
+        });
+    };
+
     // todo 수정
-    const edit = (modalData) => {
-      const content = prompt(
-        '내용을 입력해주세요',
-        state.todoData.find((d) => d.id === modalData).content
-      );
+    const edit = (id) => {
+      const content = prompt('내용을 입력해주세요');
       if (!content) {
         alert('내용을 입력해주세요.');
-        return edit(modalData);
+        return edit(id);
       }
       axios
-        .put('/api/todos/' + modalData, { content })
+        .put('/api/todos/edit/' + id, { content })
         .then((res) => {
-          state.todoData = res.data;
+          state.todoList = res.data.todoList;
+          state.doingList = res.data.doingList;
+          state.doneList = res.data.doneList;
         })
         .catch((error) => {
           console.error('There was an error!', error);
         });
     };
-    // todo 삭제
-    const deleteTodo = (modalData) => {
+
+    // todo 리셋
+    const resetTodo = () => {
       axios
-        .get('/api/todos/delete/' + modalData)
+        .get('/api/todos/reset/')
         .then((res) => {
-          state.todoData = res.data;
+          state.todoList = res.data.todoList;
+          state.doingList = res.data.doingList;
+          state.doneList = res.data.doneList;
         })
         .catch((error) => {
           console.error('There was an error!', error);
         });
     };
+
     return {
       state,
       addTodo,
       edit,
-      deleteTodo,
       passTodo1,
       passTodo2,
+      deleteTodo,
+      resetTodo,
     };
   },
   methods: {
@@ -347,6 +392,11 @@ export default {
 }
 .todo-rank {
   font-weight: 10;
+  font-size: 12px;
+}
+.task-list div {
+  display: flex;
+  align-items: center;
 }
 .t_pass {
   cursor: pointer;
