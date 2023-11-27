@@ -94,6 +94,8 @@ export default {
     openSignupPage() {
       store.commit('signUpPage_state_change', true);
       store.commit('startPage_state_change', false);
+      this.state.userid = '';
+      this.state.userpw = '';
     },
   },
   components: {},

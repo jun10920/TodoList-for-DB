@@ -23,7 +23,7 @@
           <button @click="changeInfo()">수정하기</button>
         </div>
         <div class="lower-btnBox">
-          <button>로그아웃</button>
+          <button @click="logout()">로그아웃</button>
         </div>
       </div>
     </div>
@@ -49,9 +49,19 @@ export default {
         .then((res) => {
           alert(res.data.message);
         });
+      state.chagnePw = '';
+      state.chagneNickname = '';
+    };
+    // 로그아웃
+    const logout = () => {
+      axios.get('/api/todos/logout').then((res) => {
+        alert(res.data.message);
+      });
+      store.commit('personalInfo_state_change', false);
+      store.commit('startPage_state_change', true);
     };
 
-    return { state, changeInfo };
+    return { state, changeInfo, logout };
   },
   methods: {
     goTodo() {

@@ -352,7 +352,6 @@ app.put('/api/todos/change/', async (req, res) => {
           Nickname,
           logined_userid,
         ]);
-      console.log(Pw);
       res.send({
         message: '회원정보 수정 완료',
       });
@@ -383,6 +382,39 @@ app.put('/api/todos/change/', async (req, res) => {
   } catch (err) {
     console.log('INFO수정 실패');
     console.log('query is not excuted: ' + err);
+  }
+});
+
+app.get('/api/todos', async (req, res) => {
+  if (req.session.user) {
+    try {
+      const todos = await getTodos(conn, logined_userid);
+      res.send({ todos, message: '로그인정보 있음' });
+    } catch (err) {
+      console.log('query is not executed: ' + err);
+    }
+  } else {
+    console.log('로그인정보 없음');
+    res.send({
+      message: '로그인정보 없음',
+    });
+    return true;
+  }
+});
+//로그아웃 라우터
+app.get('/api/todos/logout', async (req, res) => {
+  console.log('/process/logout 호출됨');
+  try {
+    console.log('로그아웃함');
+    req.session.destroy(function (err) {
+      if (err) throw err;
+      logined_userid = null;
+      console.log('세션 삭제하고 로그아웃됨');
+      res.send({ message: '로그아웃됨' });
+      return true;
+    });
+  } catch (err) {
+    console.log(err);
   }
 });
 
