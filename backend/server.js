@@ -219,26 +219,6 @@ app.get('/api/todos', async (req, res) => {
   }
 });
 
-// // 닉네임 데이터 불러오기
-// app.get('/api/todos/nickName', async (req, res) => {
-//   if (req.session.user) {
-//     try {
-//       const [row] = await conn
-//         .promise()
-//         .query('SELECT nickname FROM user Where userid = ?', [logined_userid]);
-//       res.send({ row });
-//     } catch (err) {
-//       console.log('query is not executed: ' + err);
-//     }
-//   } else {
-//     console.log('로그인정보 없음');
-//     res.send({
-//       message: '로그인정보 없음',
-//     });
-//     return true;
-//   }
-// });
-
 // todo 추가
 app.post('/api/todos/addTodo', async (req, res) => {
   console.log('todo 추가 라우터 호출됨');

@@ -138,18 +138,7 @@ export default {
       selectedRank: '',
       // nickName: '',
     });
-    // // 닉네임 데이터 불러오기
-    // axios.get('/api/todos/nickName').then((res) => {
-    //   if (res.data.message === '로그인정보 있음') {
-    //     store.state.todoState.nickName = res.data.row[0].nickname;
-    //     // todolistpage로 이동
-    //     store.commit('startPage_state_change', false);
-    //     store.commit('todoListPage_state_change', true);
-    //   } else if (res.data.message === '로그인정보 없음') {
-    //     store.commit('startPage_state_change', true);
-    //     store.commit('todoListPage_state_change', false);
-    //   }
-    // });
+
     // 실행 시 db 데이터 들고오기
     axios.get('/api/todos').then((res) => {
       if (res.data.message === '로그인정보 있음') {
@@ -300,14 +289,13 @@ export default {
   background-color: #fff;
 }
 .introText {
-  /* @import url(//fonts.googleapis.com/earlyaccess/jejugothic.css); */
   font-family: 'Jeju Gothic', sans-serif;
   font-size: 2.5em;
   text-align: center;
   color: black;
   z-index: 1;
   padding-bottom: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   border-bottom: 0.5px solid rgb(173, 173, 173);
   display: flex;
   flex-direction: row;

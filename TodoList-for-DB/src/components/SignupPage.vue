@@ -59,6 +59,9 @@ export default {
         alert('닉네임을 입력해주세요.');
         return;
       }
+      state.userid = '';
+      state.userpw = '';
+      state.nickname = '';
       axios
         .post('/api/todos/register', { userid, userpw, nickname })
         .then((res) => {
