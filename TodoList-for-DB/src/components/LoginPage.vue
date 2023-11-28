@@ -63,17 +63,27 @@ export default {
         alert('비밀번호를 입력해주세요.');
         return;
       }
+      state.userid = '';
+      state.userpw = '';
       axios
         .post('/api/todos/login', { userid, userpw })
         .then((res) => {
           if (res.data.message === '로그인 되었습니다.') {
             alert(res.data.message);
+            store.state.todoState.todoList = res.data.todos.todoList;
+            store.state.todoState.doingList = res.data.todos.doingList;
+            store.state.todoState.doneList = res.data.todos.doneList;
+            store.state.todoState.nickName = res.data.row[0].nickname;
             // todolistpage로 이동
             store.commit('startPage_state_change', false);
             store.commit('todoListPage_state_change', true);
           } else if (res.data.message === '로그인에 실패했습니다.') {
             alert(res.data.message);
           } else if (res.data.message === '세션 유저데이터 있음 - todo 이동') {
+            store.state.todoState.todoList = res.data.todos.todoList;
+            store.state.todoState.doingList = res.data.todos.doingList;
+            store.state.todoState.doneList = res.data.todos.doneList;
+            store.state.todoState.nickName = res.data.todos.nickName;
             store.commit('startPage_state_change', false);
             store.commit('todoListPage_state_change', true);
           }

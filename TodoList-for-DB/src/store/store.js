@@ -1,4 +1,5 @@
 import { createStore } from 'vuex';
+import { reactive } from 'vue';
 
 const store = createStore({
   state: {
@@ -7,9 +8,13 @@ const store = createStore({
     signUpPage_state: false,
     todoListPage_state: false,
     personalInfo_state: false,
-    modalData: null,
+    todoState: reactive({
+      todoList: [],
+      doingList: [],
+      doneList: [],
+      nickName: '',
+    }),
   },
-
   getters: {
     getPopState: function (state) {
       return state.popState;

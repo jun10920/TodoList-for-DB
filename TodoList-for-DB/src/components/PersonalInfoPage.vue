@@ -47,7 +47,15 @@ export default {
       axios
         .put('/api/todos/change/', { chagnePw, chagneNickname })
         .then((res) => {
-          alert(res.data.message);
+          if (res.data.message === '비밀번호 수정 완료') {
+            alert(res.data.message);
+          } else if (
+            res.data.message === '닉네임 수정 완료' ||
+            res.data.message === '회원정보 수정 완료'
+          ) {
+            store.state.todoState.nickName = res.data.row[0].nickname;
+            alert(res.data.message);
+          }
         });
       state.chagnePw = '';
       state.chagneNickname = '';

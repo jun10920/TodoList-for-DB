@@ -3,7 +3,7 @@
     <h1>ToDoList</h1>
     <div id="totalBox">
       <div class="introText">
-        {{ state.nickName }}님의 투두리스트
+        {{ this.$store.state.todoState.nickName }}님의 투두리스트
         <div class="user-icon">
           <img src="../assets/member icon.png" alt="Member Icon" style="width:
           45px; height: 45px;" cursor: pointer @click="goInfo()" >
@@ -17,7 +17,11 @@
       <div class="wrapperBox">
         <div class="sec_wrapper" id="todo_wrapper">
           <span class="wrapper-name">할 일</span>
-          <div v-for="d in state.todoList" :key="d.id" class="task-list">
+          <div
+            v-for="d in this.$store.state.todoState.todoList"
+            :key="d.id"
+            class="task-list"
+          >
             <span class="todo-content" @click="edit(d.id)">{{
               d.content
             }}</span>
@@ -29,7 +33,11 @@
         </div>
         <div class="sec_wrapper" id="doing_wrapper">
           <span class="wrapper-name">하고 있는 일</span>
-          <div v-for="d in state.doingList" :key="d.id" class="task-list">
+          <div
+            v-for="d in this.$store.state.todoState.doingList"
+            :key="d.id"
+            class="task-list"
+          >
             <span class="todo-content" @click="edit(d.id)">{{
               d.content
             }}</span>
@@ -41,7 +49,11 @@
         </div>
         <div class="sec_wrapper" id="done_wrapper">
           <span class="wrapper-name">한 일</span>
-          <div v-for="d in state.doneList" :key="d.id" class="task-list">
+          <div
+            v-for="d in this.$store.state.todoState.doneList"
+            :key="d.id"
+            class="task-list"
+          >
             <span class="todo-content" @click="edit(d.id)">{{
               d.content
             }}</span>
@@ -119,33 +131,32 @@ import store from '../store/store';
 export default {
   setup() {
     const state = reactive({
-      todoList: [],
-      doingList: [],
-      doneList: [],
+      // todoList: [],
+      // doingList: [],
+      // doneList: [],
       addContent: '',
       selectedRank: '',
-      nickName: '',
+      // nickName: '',
     });
+    // // 닉네임 데이터 불러오기
+    // axios.get('/api/todos/nickName').then((res) => {
+    //   if (res.data.message === '로그인정보 있음') {
+    //     store.state.todoState.nickName = res.data.row[0].nickname;
+    //     // todolistpage로 이동
+    //     store.commit('startPage_state_change', false);
+    //     store.commit('todoListPage_state_change', true);
+    //   } else if (res.data.message === '로그인정보 없음') {
+    //     store.commit('startPage_state_change', true);
+    //     store.commit('todoListPage_state_change', false);
+    //   }
+    // });
     // 실행 시 db 데이터 들고오기
     axios.get('/api/todos').then((res) => {
       if (res.data.message === '로그인정보 있음') {
-        state.todoList = res.data.todos.todoList;
-        state.doingList = res.data.todos.doingList;
-        state.doneList = res.data.todos.doneList;
-        state.nickName = res.data.todos.nickName;
-        // todolistpage로 이동
-        store.commit('startPage_state_change', false);
-        store.commit('todoListPage_state_change', true);
-      } else if (res.data.message === '로그인정보 없음') {
-        store.commit('startPage_state_change', true);
-        store.commit('todoListPage_state_change', false);
-      }
-    });
-
-    // 닉네임 데이터 불러오기
-    axios.get('/api/todos/nickName').then((res) => {
-      if (res.data.message === '로그인정보 있음') {
-        state.nickName = res.data.row[0].nickname;
+        store.state.todoState.todoList = res.data.todos.todoList;
+        store.state.todoState.doingList = res.data.todos.doingList;
+        store.state.todoState.doneList = res.data.todos.doneList;
+        store.state.todoState.nickName = res.data.row[0].nickname;
         // todolistpage로 이동
         store.commit('startPage_state_change', false);
         store.commit('todoListPage_state_change', true);
@@ -164,9 +175,9 @@ export default {
         return;
       }
       axios.post('/api/todos/addTodo', { content, rank }).then((res) => {
-        state.todoList = res.data.todoList;
-        state.doingList = res.data.doingList;
-        state.doneList = res.data.doneList;
+        store.state.todoState.todoList = res.data.todoList;
+        store.state.todoState.doingList = res.data.doingList;
+        store.state.todoState.doneList = res.data.doneList;
       });
     };
 
@@ -175,9 +186,9 @@ export default {
       axios
         .get('/api/todos/passTodo1/' + id)
         .then((res) => {
-          state.todoList = res.data.todoList;
-          state.doingList = res.data.doingList;
-          state.doneList = res.data.doneList;
+          store.state.todoState.todoList = res.data.todoList;
+          store.state.todoState.doingList = res.data.doingList;
+          store.state.todoState.doneList = res.data.doneList;
         })
         .catch((error) => {
           console.error('There was an error!', error);
@@ -189,9 +200,9 @@ export default {
       axios
         .get('/api/todos/passTodo2/' + id)
         .then((res) => {
-          state.todoList = res.data.todoList;
-          state.doingList = res.data.doingList;
-          state.doneList = res.data.doneList;
+          store.state.todoState.todoList = res.data.todoList;
+          store.state.todoState.doingList = res.data.doingList;
+          store.state.todoState.doneList = res.data.doneList;
         })
         .catch((error) => {
           console.error('There was an error!', error);
@@ -203,9 +214,9 @@ export default {
       axios
         .get('/api/todos/delete/' + id)
         .then((res) => {
-          state.todoList = res.data.todoList;
-          state.doingList = res.data.doingList;
-          state.doneList = res.data.doneList;
+          store.state.todoState.todoList = res.data.todoList;
+          store.state.todoState.doingList = res.data.doingList;
+          store.state.todoState.doneList = res.data.doneList;
         })
         .catch((error) => {
           console.error('There was an error!', error);
@@ -222,9 +233,9 @@ export default {
       axios
         .put('/api/todos/edit/' + id, { content })
         .then((res) => {
-          state.todoList = res.data.todoList;
-          state.doingList = res.data.doingList;
-          state.doneList = res.data.doneList;
+          store.state.todoState.todoList = res.data.todoList;
+          store.state.todoState.doingList = res.data.doingList;
+          store.state.todoState.doneList = res.data.doneList;
         })
         .catch((error) => {
           console.error('There was an error!', error);
@@ -236,9 +247,9 @@ export default {
       axios
         .get('/api/todos/reset/')
         .then((res) => {
-          state.todoList = res.data.todoList;
-          state.doingList = res.data.doingList;
-          state.doneList = res.data.doneList;
+          store.state.todoState.todoList = res.data.todoList;
+          store.state.todoState.doingList = res.data.doingList;
+          store.state.todoState.doneList = res.data.doneList;
         })
         .catch((error) => {
           console.error('There was an error!', error);
@@ -261,11 +272,11 @@ export default {
       store.commit('todoListPage_state_change', false);
     },
     openModal(id) {
-      this.$store.commit('popStateChange', true);
-      this.$store.commit('setModalData', id);
+      store.commit('popStateChange', true);
+      store.commit('setModalData', id);
     },
     closeModal() {
-      this.$store.commit('popStateChange', false);
+      store.commit('popStateChange', false);
     },
   },
   components: {},

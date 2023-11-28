@@ -124,9 +124,13 @@ app.post('/api/todos/login', async (req, res) => {
           authorized: true,
         };
         logined_userid = paramId;
-        res.send({
-          message: '로그인 되었습니다.',
-        });
+        const todos = await getTodos(conn, logined_userid);
+        const [row] = await conn
+          .promise()
+          .query('SELECT nickname FROM user Where userid = ?', [
+            logined_userid,
+          ]);
+        res.send({ row, todos, message: '로그인 되었습니다.' });
         return true;
       } else {
         console.log('로그인 정보 없음');
@@ -194,12 +198,15 @@ const addTodo = function (content, rank) {
   }
 };
 
-// todo 화면 새로고침 때 todo 등록
+// todo 화면 새로고침 때 todo, 닉네임 등록
 app.get('/api/todos', async (req, res) => {
   if (req.session.user) {
     try {
       const todos = await getTodos(conn, logined_userid);
-      res.send({ todos, message: '로그인정보 있음' });
+      const [row] = await conn
+        .promise()
+        .query('SELECT nickname FROM user Where userid = ?', [logined_userid]);
+      res.send({ row, todos, message: '로그인정보 있음' });
     } catch (err) {
       console.log('query is not executed: ' + err);
     }
@@ -212,25 +219,25 @@ app.get('/api/todos', async (req, res) => {
   }
 });
 
-// 닉네임 데이터 불러오기
-app.get('/api/todos/nickName', async (req, res) => {
-  if (req.session.user) {
-    try {
-      const [row] = await conn
-        .promise()
-        .query('SELECT nickname FROM user Where userid = ?', [logined_userid]);
-      res.send({ row, message: '로그인정보 있음' });
-    } catch (err) {
-      console.log('query is not executed: ' + err);
-    }
-  } else {
-    console.log('로그인정보 없음');
-    res.send({
-      message: '로그인정보 없음',
-    });
-    return true;
-  }
-});
+// // 닉네임 데이터 불러오기
+// app.get('/api/todos/nickName', async (req, res) => {
+//   if (req.session.user) {
+//     try {
+//       const [row] = await conn
+//         .promise()
+//         .query('SELECT nickname FROM user Where userid = ?', [logined_userid]);
+//       res.send({ row });
+//     } catch (err) {
+//       console.log('query is not executed: ' + err);
+//     }
+//   } else {
+//     console.log('로그인정보 없음');
+//     res.send({
+//       message: '로그인정보 없음',
+//     });
+//     return true;
+//   }
+// });
 
 // todo 추가
 app.post('/api/todos/addTodo', async (req, res) => {
@@ -352,7 +359,11 @@ app.put('/api/todos/change/', async (req, res) => {
           Nickname,
           logined_userid,
         ]);
+      const [row] = await conn
+        .promise()
+        .query('SELECT nickname FROM user Where userid = ?', [logined_userid]);
       res.send({
+        row,
         message: '회원정보 수정 완료',
       });
       console.log('회원정보 수정 완료');
@@ -363,9 +374,10 @@ app.put('/api/todos/change/', async (req, res) => {
           Nickname,
           logined_userid,
         ]);
-      res.send({
-        message: '닉네임 수정 완료',
-      });
+      const [row] = await conn
+        .promise()
+        .query('SELECT nickname FROM user Where userid = ?', [logined_userid]);
+      res.send({ row, message: '닉네임 수정 완료' });
       console.log('닉네임 수정 완료');
     } else if (Pw !== '' && Nickname === '') {
       await conn
@@ -410,7 +422,7 @@ app.get('/api/todos/logout', async (req, res) => {
       if (err) throw err;
       logined_userid = null;
       console.log('세션 삭제하고 로그아웃됨');
-      res.send({ message: '로그아웃됨' });
+      res.send({ message: '로그아웃' });
       return true;
     });
   } catch (err) {
