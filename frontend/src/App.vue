@@ -1,22 +1,17 @@
 <template>
-  <groundPage />
+  <GroundPage />
 </template>
 
 <script>
-import groundPage from './components/GroundPage.vue';
+import GroundPage from './components/GroundPage.vue';
 export default {
   name: 'App',
   data() {
-    return {
-      startPage_state: true,
-      signUpPage_state: false,
-      todoListPage_state: false,
-      personalInfo_state: false,
-    };
+    return {};
   },
   methods: {},
   components: {
-    groundPage,
+    GroundPage,
   },
 };
 </script>

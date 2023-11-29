@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express();
-const port = 3000;
 const bodyParser = require('body-parser'),
   cookieParser = require('cookie-parser');
 
@@ -90,14 +89,14 @@ app.post('/api/todos/register', async (req, res) => {
 //회원가입 검증 함수 for 라우터
 const checkReg = function (id, pw, nickName) {
   if (pw.length < 3) {
-    return '비밀번호를 4자 이상 입력하세요.';
-  } else if (id.length < 3) {
-    return '아이디를 3자 이상 입력하세요.';
-  } else if (nickName.length < 2) {
-    return '이름을 2자 이상 입력하세요.';
+    return '비밀번호를 3자 이상 입력하세요.';
   }
-
-  return 1;
+  if (id.length < 3) {
+    return '아이디를 3자 이상 입력하세요.';
+  }
+  if (nickName.length < 2) {
+    return '이름을 2자 이상 입력하세요.';
+  } else return 1;
 };
 
 // 로그인

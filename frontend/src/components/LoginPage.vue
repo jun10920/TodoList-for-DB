@@ -41,7 +41,6 @@
 </template>
 
 <script>
-// import axios from 'axios';
 import { reactive } from 'vue';
 import store from '../store/store';
 import axios from 'axios';
