@@ -3,11 +3,16 @@ import { reactive } from 'vue';
 
 const store = createStore({
   state: {
+    // 모달 관련
     popState: false,
+
+    // 페이지 상태 관련
     startPage_state: true,
     signUpPage_state: false,
     todoListPage_state: false,
     personalInfo_state: false,
+
+    // tolist 상태 관련
     todoState: reactive({
       todoList: [],
       doingList: [],
@@ -15,6 +20,7 @@ const store = createStore({
       nickName: '',
     }),
   },
+
   getters: {
     getPopState: function (state) {
       return state.popState;
@@ -22,10 +28,11 @@ const store = createStore({
   },
 
   mutations: {
-    // 페이지 관련
+    // 모달 관련
     popStateChange: function (state, value) {
       state.popState = value;
     },
+    // 페이지 관련
     startPage_state_change: function (state, value) {
       state.startPage_state = value;
     },
@@ -37,10 +44,6 @@ const store = createStore({
     },
     personalInfo_state_change: function (state, value) {
       state.personalInfo_state = value;
-    },
-    // 모달 관련
-    setModalData(state, id) {
-      state.modalData = id;
     },
   },
 });

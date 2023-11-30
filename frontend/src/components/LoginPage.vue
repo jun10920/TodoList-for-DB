@@ -97,9 +97,8 @@ export default {
       login,
     };
   },
-
-  // 로그인
   methods: {
+    // 회원가입 페이지로 이동
     openSignupPage() {
       store.commit('signUpPage_state_change', true);
       store.commit('startPage_state_change', false);
@@ -111,7 +110,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 /* 시작화면 페이지 */
 h1 {

@@ -46,7 +46,7 @@ export default {
       const userid = state.userid;
       const userpw = state.userpw;
       const nickname = state.nickname;
-
+      // 미 기입시 알림
       if (!userid) {
         alert('ID를 입력해주세요.');
         return;
@@ -59,6 +59,7 @@ export default {
         alert('닉네임을 입력해주세요.');
         return;
       }
+      // 입력 후 다시 빈 값으로 만들기
       state.userid = '';
       state.userpw = '';
       state.nickname = '';
@@ -75,6 +76,7 @@ export default {
             alert(res.data.message);
           } else {
             alert(res.data.message);
+            // 회원가입 완료시 로그인 페이지로 이동
             store.commit('signUpPage_state_change', false);
             store.commit('startPage_state_change', true);
           }
@@ -88,12 +90,9 @@ export default {
       signup,
     };
   },
-  methods: {},
-  components: {},
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 /* 회원가입 페이지 */
 .signUpPage_box {
