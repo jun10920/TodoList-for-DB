@@ -6,7 +6,9 @@
 - [깃 사용법](https://github.com/code-squad/codesquad-docs/blob/main/codereview/README.md)
 
 ## 소개
-Vue JS + Express.js + MySQL로 진행하는 프로젝트 레포지토리입니다. 브랜치는 `main`, `jun` 두 가지로 나누어져 있으며, 'jun' 브랜치에서 기능을 개발하고 `main` 브랜치로 병합하는 방식으로 관리됩니다.
+Vue JS + Express.js + MySQL로 진행하는 프로젝트 레포지토리입니다.
+
+브랜치는 `main`, `jun` 두 가지로 나누어져 있으며, 'jun' 브랜치에서 기능을 개발하고 `main` 브랜치로 병합하는 방식으로 관리됩니다.
 
 
 ## 🎯 목표
