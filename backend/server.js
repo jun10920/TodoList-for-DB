@@ -1,11 +1,9 @@
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser'),
-  cookieParser = require('cookie-parser');
-
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const db = require('./database.js');
 const cors = require('cors');
-const fs = require('fs');
 const conn = db.init();
 const session = require('express-session');
 
@@ -22,10 +20,10 @@ app.use(
   })
 );
 
-let logined_userid;
-
 app.set('port', process.env.PORT || 3000); // 포트 설정
 app.set('host', process.env.HOST || '0.0.0.0'); // 아이피 설정
+
+let logined_userid;
 
 // 회원가입
 app.post('/api/todos/register', async (req, res) => {
@@ -44,9 +42,6 @@ app.post('/api/todos/register', async (req, res) => {
       if (rows.length > 0) {
         res.send({
           message: '중복된 아이디입니다.',
-          userpw: paramPw,
-          userid: paramId,
-          nickName: paramNickname,
         });
       }
       //SQL 회원가입 시작
@@ -55,31 +50,21 @@ app.post('/api/todos/register', async (req, res) => {
         userpw: paramPw,
         nickname: paramNickname,
       };
-      const [row] = await conn
+      const row = await conn
         .promise()
         .query('INSERT INTO `user` set ?', regData);
-      if (rows) {
+      if (row) {
         res.send({
           message: '회원가입 되었습니다.',
-          userpw: paramPw,
-          userid: paramId,
-          nickName: paramNickname,
         });
         return true;
       } else {
         res.send({
           message: '회원가입에 실패했습니다.',
-          userpw: paramPw,
-          userid: paramId,
-          nickName: paramNickname,
         });
         res.end();
         return false;
       }
-    } else {
-      res.send({
-        message: result,
-      });
     }
   } catch (err) {
     console.log(err);
@@ -132,7 +117,6 @@ app.post('/api/todos/login', async (req, res) => {
         res.send({ row, todos, message: '로그인 되었습니다.' });
         return true;
       } else {
-        console.log('로그인 정보 없음');
         res.send({
           message: '로그인에 실패했습니다.',
         });
@@ -191,13 +175,13 @@ const addTodo = function (content, rank) {
     console.log('실행 대상 SQL: ' + row.sql);
     return;
   } catch (err) {
-    console.log('SQL 실행 오류 발생');
+    console.log('todo 등록 SQL 실행 오류 발생');
     console.dir(err);
     throw err;
   }
 };
 
-// todo 화면 새로고침 때 todo, 닉네임 등록
+// todo 화면 로딩시 todo, 닉네임 갱신
 app.get('/api/todos', async (req, res) => {
   if (req.session.user) {
     try {
@@ -218,7 +202,6 @@ app.get('/api/todos', async (req, res) => {
   }
 });
 
-// todo 추가
 app.post('/api/todos/addTodo', async (req, res) => {
   console.log('todo 추가 라우터 호출됨');
   let paramContent = req.body.content;
@@ -318,9 +301,9 @@ app.put('/api/todos/edit/:id', async (req, res) => {
       ]);
     const todos = await getTodos(conn, logined_userid);
     res.send(todos);
-    console.log('TODO수정 완료');
+    console.log('todo 수정 완료');
   } catch (err) {
-    console.log('TODO수정 실패');
+    console.log('todo 수정 실패');
     console.log('query is not excuted: ' + err);
   }
 });
@@ -376,25 +359,8 @@ app.put('/api/todos/change/', async (req, res) => {
   }
 });
 
-app.get('/api/todos', async (req, res) => {
-  if (req.session.user) {
-    try {
-      const todos = await getTodos(conn, logined_userid);
-      res.send({ todos, message: '로그인정보 있음' });
-    } catch (err) {
-      console.log('query is not executed: ' + err);
-    }
-  } else {
-    console.log('로그인정보 없음');
-    res.send({
-      message: '로그인정보 없음',
-    });
-    return true;
-  }
-});
 //로그아웃 라우터
 app.get('/api/todos/logout', async (req, res) => {
-  console.log('/process/logout 호출됨');
   try {
     console.log('로그아웃함');
     req.session.destroy(function (err) {

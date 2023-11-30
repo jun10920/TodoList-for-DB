@@ -53,6 +53,7 @@ export default {
             res.data.message === '닉네임 수정 완료' ||
             res.data.message === '회원정보 수정 완료'
           ) {
+            // 수정된 데이터베이스 정보를 화면에 출력되는 정보로 수정
             store.state.todoState.nickName = res.data.row[0].nickname;
             alert(res.data.message);
           }
@@ -77,11 +78,9 @@ export default {
       store.commit('todoListPage_state_change', true);
     },
   },
-  components: {},
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 .button-container {
   display: flex;

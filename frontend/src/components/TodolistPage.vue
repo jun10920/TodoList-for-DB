@@ -11,7 +11,6 @@
       </div>
       <div class="controlBtnBox">
         <button class="add-todo-button" @click="openModal()">ADD</button>
-        <!-- @click="addTodo()" -->
         <button class="reset-todo-button" @click="resetTodo()">RESET</button>
       </div>
       <div class="wrapperBox">
@@ -127,19 +126,14 @@
 import axios from 'axios';
 import { reactive } from 'vue';
 import store from '../store/store';
-// import { ContextExclusionPlugin } from 'webpack';
 export default {
   setup() {
     const state = reactive({
-      // todoList: [],
-      // doingList: [],
-      // doneList: [],
       addContent: '',
       selectedRank: '',
-      // nickName: '',
     });
 
-    // 실행 시 db 데이터 들고오기
+    // todo 화면 로딩시 todo, 닉네임 갱신
     axios.get('/api/todos').then((res) => {
       if (res.data.message === '로그인정보 있음') {
         store.state.todoState.todoList = res.data.todos.todoList;
@@ -260,15 +254,13 @@ export default {
       store.commit('personalInfo_state_change', true);
       store.commit('todoListPage_state_change', false);
     },
-    openModal(id) {
+    openModal() {
       store.commit('popStateChange', true);
-      store.commit('setModalData', id);
     },
     closeModal() {
       store.commit('popStateChange', false);
     },
   },
-  components: {},
 };
 </script>
 
@@ -360,7 +352,6 @@ export default {
   margin-top: 15px;
   width: auto;
   height: auto;
-  /* border: 1px solid black; */
   display: flex;
   justify-content: space-between;
 }
@@ -500,7 +491,7 @@ export default {
 .fade-leave-active {
   transition: opacity 0.7s;
 }
-.fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+.fade-leave-to {
   opacity: 0;
 }
 </style>

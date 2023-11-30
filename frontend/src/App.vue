@@ -44,9 +44,4 @@ body {
   border: 1px solid #ccc;
   background-color: #fff;
 }
-
-/* 투두리스트 페이지 */
-/* 카테고리 */
-
-/* 회원정보 수정 페이지 */
 </style>
